@@ -14,6 +14,7 @@
 		<!-- Start of LiveChat (www.livechatinc.com) code -->
 		<script type="text/javascript">
 		    var OPEN = 0, MSG = 1, CLOSE = 2, ERROR = 3;
+			var ws = null;
 			
 			function getMsgStr(message) {
 			    if (!message) {
@@ -38,24 +39,40 @@
 				}
 			}
 			
-		    window.alert("Click OK to send websocket message...");
-			ws = new WebSocket("ws://localhost:8180/CompanyAgent/events?Company=Schlumberger"); 
-			ws.onopen = function(){ws.send("Company Agent ready!"); }; 
-			ws.onmessage = function(evt){
-			    console.log(evt.data);
-				appendChatRecord(getMsgStr(evt.data));
-			}; 
-			ws.onclose = function(evt){console.log("WebSocketClosed!");}; 
-			ws.onerror = function(evt){console.log("WebSocketError!");};
+			function startCommunication() {
+				ws = new WebSocket("ws://localhost:8180/CompanyAgent/events?Company=Schlumberger"); 
+				ws.onopen = function(){
+				    sendMsg("server", "Company Agent ready!");
+				}; 
+				ws.onmessage = function(evt){
+					console.log(evt.data);
+					appendChatRecord(getMsgStr(evt.data));
+				}; 
+				ws.onclose = function(evt){console.log("WebSocketClosed!");}; 
+				ws.onerror = function(evt){console.log("WebSocketError!");};
+			}
+			
+			function Message(customerId, msg) {
+				this.customerId = customerId;
+				this.msg = msg;
+			}
+			
+			function sendMsg(customerId, msg) {
+				if (msg) {
+				    ws.send(JSON.stringify(new Message(customerId, msg)));
+				}
+			}
 			
 			$(".sendMessageBtn").bind("click", function() {
 			    var msg = $(".inputMessage")[0].value;
 				if (msg) {
-				    ws.send(msg);
+				    sendMsg("all", msg);
 					appendChatRecord("Company Agent: " + msg);
 					$(".inputMessage")[0].value = "";
 				}
 			});
+			
+			startCommunication();
 		</script>
 		<!-- End of LiveChat code -->
 	</body>

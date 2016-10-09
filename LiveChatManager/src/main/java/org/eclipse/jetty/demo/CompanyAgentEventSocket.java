@@ -24,10 +24,13 @@ public class CompanyAgentEventSocket {
     @OnMessage
     public void onWebSocketText(String message)
     {
-        System.out.println("Company Agent Socket received TEXT message: " + message);
-        if (communication != null) {
-        	communication.sendMsgToCustomer(message);
-        }
+    	final ServerMsg msg = ServerMsg.buildServerMsg(message);
+    	if (msg != null) {
+            System.out.println("Company Agent Socket received TEXT message: " + msg);
+            if (communication != null) {
+            	communication.sendMsgToCustomer(msg.getCustomerId(), msg.getMsg());
+            }
+    	}
     }
     
     @OnClose

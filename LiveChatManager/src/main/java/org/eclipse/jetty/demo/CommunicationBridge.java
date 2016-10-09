@@ -11,6 +11,9 @@ import org.json.JSONObject;
 
 public class CommunicationBridge {
 	public static class Communication {
+		private static final String BROADCAST_CUSOMTER = "all";
+		private static final String SERVER_MSG_CUSTOMER = "server";
+		
 		private final String company;
 		private final Session companyAgent;
 		private final Map<String, Session> customers = new ConcurrentHashMap<>();
@@ -31,22 +34,24 @@ public class CommunicationBridge {
 			companyAgent = session;
 		}
 		
-		public void sendMsgToCustomer(final String msg) {
-			if ((msg == null) || (msg.length() == 0)) {
+		public void sendMsgToCustomer(final String customerId, final String msg) {
+			if (Utils.isEmptyStr(customerId) || Utils.isEmptyStr(msg)) {
 				return;
 			}
-//			final int separatorPos = msg.indexOf('|');
-//			if (separatorPos < 0) return;
-//			final String customerId = msg.substring(0, separatorPos);
-//			final Session customer = customers.get(customerId);
-//			if (customer == null) {
-//				System.out.println("Customer " + customerId + " does not exist!");
-//				return;
-//			}
-//			sendMsg(msg.substring(separatorPos+1), customer);
-			for (final Map.Entry<String, Session> entry : customers.entrySet()) {
-				sendMsg(company + ": " + msg, entry.getValue());
+			
+			if (customerId.equals(SERVER_MSG_CUSTOMER)) return; // for server only.
+			if (customerId.equals(BROADCAST_CUSOMTER)) { // broadcast to all customers
+				for (final Map.Entry<String, Session> entry : customers.entrySet()) {
+					sendMsg(company + ": " + msg, entry.getValue());
+				}
+				return;
 			}
+			final Session customer = customers.get(customerId);
+			if (customer == null) {
+				System.out.println("Customer " + customerId + " does not exist!");
+				return;
+			}
+			sendMsg(company + ": " + msg, customer);
 		}
 		
 		public void addCustomer(final Session session) {
