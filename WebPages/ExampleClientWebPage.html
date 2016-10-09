@@ -2,38 +2,116 @@
 	<head>
 		<meta charset="utf-8">
 		<script type="text/javascript" src="scripts/jquery-3.1.1.js"></script>
+		<link rel="stylesheet" href="css/customerLiveChat.css">
 	</head>
 	<body>
 	    <H1>Hello, this is Customer!</H1>
 
-		<div>
-		    <div class="chatRecords">
+		
+		
+		<!-- Start of LiveChat Widget in Customer side -->
+		<div id="liveChat-Widget">
+			<div id="liveChat-minimized">
+				<div id="lc-content">
+				    <a id="lc-full-view-button" class="lc-widget-header" href="#">
+						<span id="lc-open-label">Chat with Customer Service</span>
+					</a>
+				</div>
 			</div>
-		    <input type="text" name="message" id="message" class="inputMessage">
-		    <input type="button" name="sendMessage" id="sendMessage" value="Send Message" class="sendMessageBtn">
+			<div id="liveChat-full">
+				<div id="lc-wrapper" class="lc-outline">
+					<table class="lc-content" cellspacing="0" cellpadding="0"><tbody>
+						<tr id="lc-title-container"><td>
+							<a id="lc-title-row" class="lc-widget-header" href="#">
+								<span id="lc-close-chat" class="lc-title-button" data-title="Close the chat">x</span>	
+								<span id="lc-minimize" class="lc-title-button" data-title="Minimize window">-</span>		
+								<span id="lc-title-text">Customer Service</span>
+							</a>					
+						</td></tr>
+						<tr id="lc-chat-container"><td>
+							<div id="lc-chatRecords"></div>
+						</td></tr>
+						<tr id="lc-chat-control"><td>
+						    <div id="lc-startChat-container">
+								<input type="button" name="startChat" id="lc-startChat" value="Start Chat" class="lc-startChatBtn">
+							</div>
+						    <div id="lc-sendMessage-container">
+								<div><input type="text" name="message" id="lc-message" class="lc-inputMessage"></div>
+								<div><input type="button" name="sendMessage" id="lc-sendMessage" value="Send Message" class="lc-sendMessageBtn"></div>
+							</div>
+						</td></tr>
+					</tbody></table>
+				</div>		
+			</div>
 		</div>
+		
+		<!-- End of LiveChat Widget in Customer side -->
+		
 		<!-- Start of LiveChat (www.livechatinc.com) code -->
-		<script type="text/javascript">
-		    function appendChatRecord(message) {
-					$(".chatRecords").append("<div class='chatMessage'>" + message + "</div>");
+		<script type="text/javascript">			
+			var ws = null;
+			
+			function startCommunication() {
+				if (ws) {
+					return;
+				}
+				ws = new WebSocket("ws://localhost:8080/Customer/events?Company=Schlumberger"); 
+				//ws.onopen = function(){ws.send("starts chat!"); }; 
+				ws.onmessage = function(evt){
+					console.log(evt.data);
+					appendChatRecord(evt.data);
+				}; 
+				ws.onclose = function(evt){console.log("WebSocketClosed!");}; 
+				ws.onerror = function(evt){console.log("WebSocketError!");};
 			}
 			
-		    window.alert("Click OK to send websocket message...");
-			ws = new WebSocket("ws://localhost:8080/Customer/events?Company=Schlumberger"); 
-			//ws.onopen = function(){ws.send("starts chat!"); }; 
-			ws.onmessage = function(evt){
-			    console.log(evt.data);
-				appendChatRecord(evt.data);
-			}; 
-			ws.onclose = function(evt){console.log("WebSocketClosed!");}; 
-			ws.onerror = function(evt){console.log("WebSocketError!");};
+			function stopCommunication() {
+				if (!ws) {
+					return;
+				}
+				ws.close();
+				ws = null;
+			}
 			
-			$(".sendMessageBtn").bind("click", function() {
-			    var msg = $(".inputMessage")[0].value;
+		    function appendChatRecord(message) {
+			    if (message) {
+					$("#lc-chatRecords").append("<div class='lc-chatMessage'>" + message + "</div>");
+				    $("#lc-chatRecords")[0].scrollTop = $("#lc-chatRecords")[0].scrollHeight;
+				}
+			}
+			
+			function toggleWidget(fullView, minimizedView) {
+				var fullViewStyle = fullView ? "visible" : "hidden";
+				var minimizedViewStyle = minimizedView ? "visible" : "hidden";
+				$("#liveChat-minimized").css("visibility", minimizedViewStyle);
+				$("#liveChat-full").css("visibility", fullViewStyle);
+			}
+			
+			$("#lc-full-view-button").bind("click", function() {
+				toggleWidget(true, false);
+			});
+			
+			$("#lc-minimize").bind("click", function() {
+				toggleWidget(false, true);
+			});
+			
+			$("#lc-close-chat").bind("click", function() {
+				stopCommunication();
+				toggleWidget(false, false);
+			});
+			
+			$(".lc-startChatBtn").bind("click", function() {
+				startCommunication();
+				$("#lc-startChat-container").css("visibility", "hidden");
+				$("#lc-sendMessage-container").css("visibility", "visible");
+			});
+			
+			$(".lc-sendMessageBtn").bind("click", function() {
+			    var msg = $(".lc-inputMessage")[0].value;
 				if (msg) {
 				    ws.send(msg);
 					appendChatRecord("Me: " + msg);
-					$(".inputMessage")[0].value = "";
+					$(".lc-inputMessage")[0].value = "";
 				}
 			});
 		</script>
