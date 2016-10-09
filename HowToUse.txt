@@ -1,8 +1,8 @@
 1. The Jetty Server is based on https://github.com/jetty-project/embedded-jetty-websocket-examples/tree/master/javax.websocket-example ;
 2. Use Eclipse to import the existing maven project, choose the folder ".../LiveChatManager" as your project;
 3. Build the project and run the ".../LiveChatManager/src/main/java/org/eclipse/jetty/demo/Entry.java" as Java Application;
-4. Goto "WebPages", open "ExampleCompanyAgentPage.html" in Chrome (or other browsers that can support H5 websocket), click "OK" in the popup alert window;
-5. Goto "WebPages", open "ExampleClientWebPage.html" in Chrome (or other browsers that can support H5 websocket), click "OK" in the popup alert window;
+4. Goto "WebPages", open "ExampleCompanyAgentPage.html" in Chrome (or other browsers that can support H5 websocket);
+5. Goto "WebPages", open "ExampleClientWebPage.html" in Chrome (or other browsers that can support H5 websocket), click "Start Chat" button;
 6. Now, you can chat.
 
 
