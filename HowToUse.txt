@@ -4,3 +4,8 @@
 4. Goto "WebPages", open "ExampleCompanyAgentPage.html" in Chrome (or other browsers that can support H5 websocket), click "OK" in the popup alert window;
 5. Goto "WebPages", open "ExampleClientWebPage.html" in Chrome (or other browsers that can support H5 websocket), click "OK" in the popup alert window;
 6. Now, you can chat.
+
+
+P.S.
+1. The json parsing code is from https://github.com/stleary/JSON-java ;
+2. You need to download lombok.jar from https://projectlombok.org/ , then go to your eclipse project, right click to edit the "Properties -> Java Build Path -> Add External JARs... -> add your downloaded lombok.jar".

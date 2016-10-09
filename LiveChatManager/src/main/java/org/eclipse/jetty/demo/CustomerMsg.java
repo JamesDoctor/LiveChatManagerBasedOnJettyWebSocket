@@ -11,7 +11,7 @@ public class CustomerMsg {
 	
     private final String msg;
     private final int type;
-    private final String customerid;
+    private final String customerId;
     
     public static CustomerMsg buildOpenMsg(final String customerId) {
     	return new CustomerMsg(null, OPEN, customerId);

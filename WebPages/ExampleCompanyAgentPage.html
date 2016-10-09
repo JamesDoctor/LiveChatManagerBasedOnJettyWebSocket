@@ -13,8 +13,29 @@
 		</div>
 		<!-- Start of LiveChat (www.livechatinc.com) code -->
 		<script type="text/javascript">
+		    var OPEN = 0, MSG = 1, CLOSE = 2, ERROR = 3;
+			
+			function getMsgStr(message) {
+			    if (!message) {
+				    return null;
+				}
+			    var msgData = JSON.parse(message);
+				if (!msgData) {
+				    return null;
+				}
+				var customerId = msgData.customerId;
+				var type = msgData.type;
+				var result = customerId + ": ";
+				if (type == OPEN) return result + "connected";
+				if (type == CLOSE) return result + "is offline";
+				if (type == ERROR) return result + "encounters an error";
+				return result + msgData.msg;
+			}
+			
 		    function appendChatRecord(message) {
-					$(".chatRecords").append("<div class='chatMessage'>" + message + "</div>");
+				if (message) {
+			        $(".chatRecords").append("<div class='chatMessage'>" + message + "</div>");
+				}
 			}
 			
 		    window.alert("Click OK to send websocket message...");
@@ -22,7 +43,7 @@
 			ws.onopen = function(){ws.send("Company Agent ready!"); }; 
 			ws.onmessage = function(evt){
 			    console.log(evt.data);
-				appendChatRecord(evt.data);
+				appendChatRecord(getMsgStr(evt.data));
 			}; 
 			ws.onclose = function(evt){console.log("WebSocketClosed!");}; 
 			ws.onerror = function(evt){console.log("WebSocketError!");};

@@ -20,7 +20,7 @@
 			
 		    window.alert("Click OK to send websocket message...");
 			ws = new WebSocket("ws://localhost:8080/Customer/events?Company=Schlumberger"); 
-			ws.onopen = function(){ws.send("starts chat!"); }; 
+			//ws.onopen = function(){ws.send("starts chat!"); }; 
 			ws.onmessage = function(evt){
 			    console.log(evt.data);
 				appendChatRecord(evt.data);
