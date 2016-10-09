@@ -55,14 +55,28 @@
 				if (ws) {
 					return;
 				}
-				ws = new WebSocket("ws://localhost:8080/Customer/events?Company=Schlumberger"); 
-				//ws.onopen = function(){ws.send("starts chat!"); }; 
+				try {
+					ws = new WebSocket("ws://localhost:8080/Customer/events?Company=Schlumberger"); 
+				} catch (e) {
+				    appendChatRecord(e);
+				}
+				
+				ws.onopen = function(){
+				    appendChatRecord("Connected to Customer Service.");
+					toggleChatContoller(true);
+				}; 
 				ws.onmessage = function(evt){
 					console.log(evt.data);
 					appendChatRecord(evt.data);
 				}; 
-				ws.onclose = function(evt){console.log("WebSocketClosed!");}; 
-				ws.onerror = function(evt){console.log("WebSocketError!");};
+				ws.onclose = function(evt){
+				    appendChatRecord("Communicating to Customer Service closed!");
+					toggleChatContoller(false);
+				    ws = null;
+				}; 
+				ws.onerror = function(evt){
+				    appendChatRecord("Error in communicating with Customer Service!");
+				};
 			}
 			
 			function stopCommunication() {
@@ -70,7 +84,6 @@
 					return;
 				}
 				ws.close();
-				ws = null;
 			}
 			
 		    function appendChatRecord(message) {
@@ -85,6 +98,13 @@
 				var minimizedViewStyle = minimizedView ? "visible" : "hidden";
 				$("#liveChat-minimized").css("visibility", minimizedViewStyle);
 				$("#liveChat-full").css("visibility", fullViewStyle);
+			}
+			
+			function toggleChatContoller(chatStarted) {
+				var startChatStyle = chatStarted ? "hidden" : "visible";
+				var sendMsgStyle = chatStarted ? "visible" : "hidden";
+				$("#lc-startChat-container").css("visibility", startChatStyle);
+				$("#lc-sendMessage-container").css("visibility", sendMsgStyle);
 			}
 			
 			$("#lc-full-view-button").bind("click", function() {
@@ -102,8 +122,6 @@
 			
 			$(".lc-startChatBtn").bind("click", function() {
 				startCommunication();
-				$("#lc-startChat-container").css("visibility", "hidden");
-				$("#lc-sendMessage-container").css("visibility", "visible");
 			});
 			
 			$(".lc-sendMessageBtn").bind("click", function() {

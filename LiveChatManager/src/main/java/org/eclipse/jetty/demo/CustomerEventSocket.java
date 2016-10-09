@@ -20,8 +20,10 @@ public class CustomerEventSocket {
     {
         System.out.println("Customer Socket Connected: " + sess);
         communication = CommunicationBridge.addCustomerSession(sess);
-        id = sess.getId();
-    	communication.sendMsgToCompanyAgent(CustomerMsg.buildOpenMsg(id));
+        if (communication != null) {
+            id = sess.getId();
+        	communication.sendMsgToCompanyAgent(CustomerMsg.buildOpenMsg(id));
+        }
     }
     
     @OnMessage
@@ -37,14 +39,18 @@ public class CustomerEventSocket {
     public void onWebSocketClose(CloseReason reason)
     {
         System.out.println("Socket Closed: " + reason);
-    	communication.sendMsgToCompanyAgent(CustomerMsg.buildCloseMsg(id));
+        if (communication != null) {
+        	communication.sendMsgToCompanyAgent(CustomerMsg.buildCloseMsg(id));
+        }
     }
     
     @OnError
     public void onWebSocketError(Throwable cause)
     {
         cause.printStackTrace(System.err);
-    	communication.sendMsgToCompanyAgent(CustomerMsg.buildErrorMsg(id));
+        if (communication != null) {
+        	communication.sendMsgToCompanyAgent(CustomerMsg.buildErrorMsg(id));
+        }
     }
 }
 
