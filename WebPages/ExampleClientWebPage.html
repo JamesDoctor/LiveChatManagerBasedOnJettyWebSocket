@@ -92,6 +92,7 @@
 					}; 
 					ws.onclose = function(evt){
 						ws = null;
+						appendChatRecord("Chat closed!");
 						toggleChatContoller();
 					}; 
 					ws.onerror = function(evt){

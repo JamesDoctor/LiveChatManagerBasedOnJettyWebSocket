@@ -41,6 +41,7 @@ public class CustomerEventSocket {
         System.out.println("Socket Closed: " + reason);
         if (communication != null) {
         	communication.sendMsgToCompanyAgent(CustomerMsg.buildCloseMsg(id));
+        	communication.removeCustomer(id);
         }
     }
     

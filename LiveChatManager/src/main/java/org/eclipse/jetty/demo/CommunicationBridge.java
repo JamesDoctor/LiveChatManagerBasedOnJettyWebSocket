@@ -15,7 +15,7 @@ public class CommunicationBridge {
 		private static final String SERVER_MSG_CUSTOMER = "server";
 		
 		private final String company;
-		private final Session companyAgent;
+		private Session companyAgent;
 		private final Map<String, Session> customers = new ConcurrentHashMap<>();
 		
 		private static void sendMsg(final String msg, final Session session) {
@@ -58,9 +58,31 @@ public class CommunicationBridge {
 			customers.put(session.getId(), session);
 			System.out.println("Added customer session for ID: " + session.getId());
 		}
+		
+		public void removeCustomer(final String customerId) {
+			customers.remove(customerId);
+		}
 
 		public void sendMsgToCompanyAgent(final CustomerMsg msg) {
-			sendMsg(new JSONObject(msg).toString(), companyAgent);
+			if (companyAgent != null) {
+				sendMsg(new JSONObject(msg).toString(), companyAgent);
+			} else {
+				System.out.println("Company Agent is already closed.");
+			}
+		}
+		
+		public void clear() {
+			for (Map.Entry<String, Session> entry : customers.entrySet()) {
+				try {
+					entry.getValue().close();
+					System.out.println("Closed session of customer " + entry.getKey());
+				} catch (final Exception e) {
+					e.printStackTrace();
+					System.out.println("Exception occurs in closing customer session: " + e.getMessage());
+				}
+			}
+			customers.clear();
+			companyAgent = null;
 		}
 	}
 	
@@ -95,6 +117,12 @@ public class CommunicationBridge {
     	companyAgentSessions.put(company, com);
     	System.out.println("Company Agent communication added for " + company);
     	return com;
+    }
+    
+    public static void removeCompanyAgentSession(final Communication communication) {
+    	if (communication == null) return;
+    	communication.clear();
+    	companyAgentSessions.remove(communication.company);
     }
     
     public static Communication addCustomerSession(final Session session) {

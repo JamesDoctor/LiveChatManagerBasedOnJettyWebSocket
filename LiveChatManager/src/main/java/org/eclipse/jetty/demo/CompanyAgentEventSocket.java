@@ -37,6 +37,10 @@ public class CompanyAgentEventSocket {
     public void onWebSocketClose(CloseReason reason)
     {
         System.out.println("Socket Closed: " + reason);
+        if (communication != null) {
+            System.out.println("Remove this company agent related communications.");
+        	CommunicationBridge.removeCompanyAgentSession(communication);
+        }
     }
     
     @OnError
