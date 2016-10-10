@@ -10,7 +10,7 @@
 		<div id="lc-company-agent">
 		    <div class="lc-in-chat-UI-blocker"></div>
 			
-			<div>Online Customers <span id="lc-total-online-customers">0</span></div>
+			<div id="lc-company-agent-header">Online Customers <span id="lc-total-online-customers">0</span></div>
 			
 			<table class="lc-content" cellspacing="0" cellpadding="0"><tbody>
 				<tr>
@@ -67,7 +67,8 @@
 					CLOSE_CHAT_BTN : "#lc-close-chat",
 					IN_CHAT_CUSTOMER_BLOCK : "lc-in-chat-customer-block",
 					TO_HANDLE_CUSTOMER_BLOCK : "lc-to-handle-customer-block",
-					IN_CHAT_UI_BLOCKER : ".lc-in-chat-UI-blocker"
+					IN_CHAT_UI_BLOCKER : ".lc-in-chat-UI-blocker",
+					HEADER : "#lc-company-agent-header"
 				};
 					
 				var styles = {
@@ -204,6 +205,13 @@
 					}
 				}
 				
+				function shutDown(msg) {
+					for (var id in onlineCustomers) {
+						removeCustomer(id);
+					}
+					$(selectors.HEADER).html(msg);
+				}
+				
 				function addMessage(customerId, msg, fromSelf) {
 					var customer = onlineCustomers[customerId];
 					if (customer) {
@@ -258,8 +266,12 @@
 							handleMsg(evt.data);
 						}
 					}; 
-					ws.onclose = function(evt){console.log("WebSocketClosed!");}; 
-					ws.onerror = function(evt){console.log("WebSocketError!");};
+					ws.onclose = function(evt){
+						shutDown("Connection to server lost, please reload this page!");
+					}; 
+					ws.onerror = function(evt){
+						shutDown("An error occurs in communication with server, please reload this page!");
+					};
 				}
 				
 				function Message(customerId, msg) {

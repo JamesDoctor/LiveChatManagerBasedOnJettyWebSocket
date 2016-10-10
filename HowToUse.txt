@@ -1,3 +1,4 @@
+Part A. Basic Demo
 1. The Jetty Server is based on https://github.com/jetty-project/embedded-jetty-websocket-examples/tree/master/javax.websocket-example ;
 2. Use Eclipse to import the existing maven project, choose the folder ".../LiveChatManager" as your project;
 3. Build the project and run the ".../LiveChatManager/src/main/java/org/eclipse/jetty/demo/Entry.java" as Java Application;
@@ -9,3 +10,11 @@
 P.S.
 1. The json parsing code is from https://github.com/stleary/JSON-java ;
 2. You need to download lombok.jar from https://projectlombok.org/ , then go to your eclipse project, right click to edit the "Properties -> Java Build Path -> Add External JARs... -> add your downloaded lombok.jar".
+
+-----------------------------------------------------
+
+Part B. Add a javascript snippet into a customer web page to enable the live chat
+Suppose there is a raw customer web page like ".../WebPages/rawClientWebPage.html":
+1. Open this raw customer web page in an editor;
+2. Before "</body>" in this web page, insert the snippet in ".../WebPages/toInsertJS.html" (then the raw customer web page will have the contents like ".../WebPages/rawClientWebPageWithToInsertJSAdded.html");
+3. Now open the modified customer web page, and you will see the live chat widget, and you can use it to chat with company agent (if both server is running, and company agent web page is opened).
