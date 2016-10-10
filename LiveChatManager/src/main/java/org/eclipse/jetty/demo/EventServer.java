@@ -21,6 +21,7 @@ public class EventServer
         // This is also known as the handler tree (in jetty speak)
         ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
         context.setContextPath(contextPath);
+        context.setStopTimeout(10000000);
         server.setHandler(context);
 
         try

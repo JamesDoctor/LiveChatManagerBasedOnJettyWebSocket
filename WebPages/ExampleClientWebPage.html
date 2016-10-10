@@ -47,91 +47,120 @@
 		
 		<!-- End of LiveChat Widget in Customer side -->
 		
-		<!-- Start of LiveChat (www.livechatinc.com) code -->
-		<script type="text/javascript">			
-			var ws = null;
-			
-			function startCommunication() {
-				if (ws) {
-					return;
-				}
-				try {
-					ws = new WebSocket("ws://localhost:8080/Customer/events?Company=Schlumberger"); 
-				} catch (e) {
-				    appendChatRecord(e);
+		<!-- Start of LiveChat code -->
+		<script type="text/javascript">
+			function setupLiveChat() {
+				var ws = null;
+				var chatBoxFullView = true;
+				var selectors = {
+					CHAT_RECORDS : "#lc-chatRecords",
+					CHAT_MIN : "#liveChat-minimized",
+					CHAT_FULL : "#liveChat-full",
+					START_CHAT_CONTAINER : "#lc-startChat-container",
+					SEND_MESSAGE_CONTAINER : "#lc-sendMessage-container",
+					FULL_VIEW_BTN : "#lc-full-view-button",
+					MIN_VIEW_BTN : "#lc-minimize",
+					CLOSE_CHAT_BTN : "#lc-close-chat",
+					START_CHAT_BTN : ".lc-startChatBtn",
+					SEND_MSG_BTN : ".lc-sendMessageBtn",
+					INPUT_MSG : ".lc-inputMessage"
+				};
+				
+				var styles = {
+					VISIBILITY : "visibility",
+					VISIBLE : "visible",
+					HIDDEN : "hidden"
+				};
+				
+				function startCommunication() {
+					if (ws) {
+						return;
+					}
+					try {
+						ws = new WebSocket("ws://localhost:8080/Customer/events?Company=ABCLtd"); 
+					} catch (e) {
+						appendChatRecord(e);
+					}
+					
+					ws.onopen = function(){
+						appendChatRecord("Connected to Customer Service.");
+						toggleChatContoller();
+					}; 
+					ws.onmessage = function(evt){
+						console.log(evt.data);
+						appendChatRecord(evt.data);
+					}; 
+					ws.onclose = function(evt){
+						ws = null;
+						toggleChatContoller();
+					}; 
+					ws.onerror = function(evt){
+						appendChatRecord("Error in communicating with Customer Service!");
+					};
 				}
 				
-				ws.onopen = function(){
-				    appendChatRecord("Connected to Customer Service.");
-					toggleChatContoller(true);
-				}; 
-				ws.onmessage = function(evt){
-					console.log(evt.data);
-					appendChatRecord(evt.data);
-				}; 
-				ws.onclose = function(evt){
-				    appendChatRecord("Communicating to Customer Service closed!");
-					toggleChatContoller(false);
-				    ws = null;
-				}; 
-				ws.onerror = function(evt){
-				    appendChatRecord("Error in communicating with Customer Service!");
-				};
-			}
-			
-			function stopCommunication() {
-				if (!ws) {
-					return;
+				function stopCommunication() {
+					if (!ws) {
+						return;
+					}
+					ws.close();
 				}
-				ws.close();
-			}
-			
-		    function appendChatRecord(message) {
-			    if (message) {
-					$("#lc-chatRecords").append("<div class='lc-chatMessage'>" + message + "</div>");
-				    $("#lc-chatRecords")[0].scrollTop = $("#lc-chatRecords")[0].scrollHeight;
+				
+				function appendChatRecord(message) {
+					if (message) {
+						$(selectors.CHAT_RECORDS).append("<div class='lc-chatMessage'>" + message + "</div>");
+						$(selectors.CHAT_RECORDS)[0].scrollTop = $(selectors.CHAT_RECORDS)[0].scrollHeight;
+					}
 				}
-			}
-			
-			function toggleWidget(fullView, minimizedView) {
-				var fullViewStyle = fullView ? "visible" : "hidden";
-				var minimizedViewStyle = minimizedView ? "visible" : "hidden";
-				$("#liveChat-minimized").css("visibility", minimizedViewStyle);
-				$("#liveChat-full").css("visibility", fullViewStyle);
-			}
-			
-			function toggleChatContoller(chatStarted) {
-				var startChatStyle = chatStarted ? "hidden" : "visible";
-				var sendMsgStyle = chatStarted ? "visible" : "hidden";
-				$("#lc-startChat-container").css("visibility", startChatStyle);
-				$("#lc-sendMessage-container").css("visibility", sendMsgStyle);
-			}
-			
-			$("#lc-full-view-button").bind("click", function() {
-				toggleWidget(true, false);
-			});
-			
-			$("#lc-minimize").bind("click", function() {
-				toggleWidget(false, true);
-			});
-			
-			$("#lc-close-chat").bind("click", function() {
-				stopCommunication();
-				toggleWidget(false, false);
-			});
-			
-			$(".lc-startChatBtn").bind("click", function() {
-				startCommunication();
-			});
-			
-			$(".lc-sendMessageBtn").bind("click", function() {
-			    var msg = $(".lc-inputMessage")[0].value;
-				if (msg) {
-				    ws.send(msg);
-					appendChatRecord("Me: " + msg);
-					$(".lc-inputMessage")[0].value = "";
+				
+				function toggleWidget(fullView, minimizedView) {
+					var fullViewStyle = fullView ? styles.VISIBLE : styles.HIDDEN;
+					var minimizedViewStyle = minimizedView ? styles.VISIBLE : styles.HIDDEN;
+					$(selectors.CHAT_MIN).css(styles.VISIBILITY, minimizedViewStyle);
+					$(selectors.CHAT_FULL).css(styles.VISIBILITY, fullViewStyle);
 				}
-			});
+				
+				function toggleChatContoller() {
+					var startChatStyle = ((!ws) && chatBoxFullView) ? styles.VISIBLE : styles.HIDDEN;
+					var sendMsgStyle = (ws && chatBoxFullView) ? styles.VISIBLE : styles.HIDDEN;
+					$(selectors.START_CHAT_CONTAINER).css(styles.VISIBILITY, startChatStyle);
+					$(selectors.SEND_MESSAGE_CONTAINER).css(styles.VISIBILITY, sendMsgStyle);
+				}
+				
+				$(selectors.FULL_VIEW_BTN).on("click", function() {
+					toggleWidget(true, false);
+					chatBoxFullView = true;
+					toggleChatContoller();
+				});
+				
+				$(selectors.MIN_VIEW_BTN).on("click", function() {
+					toggleWidget(false, true);
+					chatBoxFullView = false;
+					toggleChatContoller();
+				});
+				
+				$(selectors.CLOSE_CHAT_BTN).on("click", function() {
+					stopCommunication();
+					toggleWidget(false, false);
+					$(selectors.CHAT_MIN).remove();
+					$(selectors.CHAT_FULL).remove();
+				});
+				
+				$(selectors.START_CHAT_BTN).on("click", function() {
+					startCommunication();
+				});
+				
+				$(selectors.SEND_MSG_BTN).on("click", function() {
+					var msg = $(selectors.INPUT_MSG)[0].value;
+					if (msg) {
+						ws.send(msg);
+						appendChatRecord("Me: " + msg);
+						$(selectors.INPUT_MSG)[0].value = "";
+					}
+				});
+			}
+			
+			setupLiveChat();
 		</script>
 		<!-- End of LiveChat code -->
 	</body>
