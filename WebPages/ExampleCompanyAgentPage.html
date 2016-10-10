@@ -53,9 +53,9 @@
 					CUSTOMER_BLOCK : "lc-customer-block",
 					CUSTOMER_BLOCK_ROW : "lc-customer-block-row",
 					CUSTOMER_DISPLAY_NAME : "lc-customer-display-name",
-					TO_HANDLE_MESSAGES : "lc-to-handle-messages",
-					TO_HANDLE_MESSAGES_COUNT : "count",
-					TO_HANDLE_LC_MESSAGES_COUNT : "lc-to-handle-msg-count",
+					UNREAD_MESSAGES : "lc-unread-messages",
+					UNREAD_MESSAGES_COUNT : "count",
+					UNREAD_MESSAGES_COUNT_NUM : "lc-unread-messages-count",
 					CHAT_BOX : "#lc-chat-box",
 					CUSTOMER_ID : "customerId",
 					IN_CHAT_CUSTOMER : "#lc-chat-box #lc-in-chat-customer",
@@ -88,16 +88,16 @@
 					}
 					if (typeof this.updateToHandleMessages !== "function") {
 						Customer.prototype.updateToHandleMessages = function(reset) {
-							var toHandleMessageDom = $("#" + this.getCustomerBlockId() + " ." + selectors.TO_HANDLE_MESSAGES);
+							var unreadMessagesDom = $("#" + this.getCustomerBlockId() + " ." + selectors.UNREAD_MESSAGES);
 							var result;
 							if (reset) {
-								toHandleMessageDom.attr(selectors.TO_HANDLE_MESSAGES_COUNT, 0);
+								unreadMessagesDom.attr(selectors.UNREAD_MESSAGES_COUNT, 0);
 								result = "0";
 							} else {
-								result = Number(toHandleMessageDom.attr(selectors.TO_HANDLE_MESSAGES_COUNT)) + 1;
-								toHandleMessageDom.attr(selectors.TO_HANDLE_MESSAGES_COUNT, result);
+								result = Number(unreadMessagesDom.attr(selectors.UNREAD_MESSAGES_COUNT)) + 1;
+								unreadMessagesDom.attr(selectors.UNREAD_MESSAGES_COUNT, result);
 							}
-							toHandleMessageDom.find("." + selectors.TO_HANDLE_LC_MESSAGES_COUNT).html(result);
+							unreadMessagesDom.find("." + selectors.UNREAD_MESSAGES_COUNT_NUM).html(result);
 						};
 					}
 					if (typeof this.attachUI !== "function") {
@@ -107,9 +107,9 @@
 								"'><td><a href='#'><div class='" + selectors.CUSTOMER_BLOCK +
 								"' " + selectors.CUSTOMER_ID + "='" + this.id + "'>" +
 								"<span class='" + selectors.CUSTOMER_DISPLAY_NAME + "'>" + this.id +
-								"</span><span class='" + selectors.TO_HANDLE_MESSAGES + "' " +
-								selectors.TO_HANDLE_MESSAGES_COUNT + "='0'>Messages to Handle:&nbsp;<span class='" +
-								selectors.TO_HANDLE_LC_MESSAGES_COUNT + "'>0</span></div></a></td></tr>");
+								"</span><span class='" + selectors.UNREAD_MESSAGES + "' " +
+								selectors.UNREAD_MESSAGES_COUNT + "='0'>Unread Messages:&nbsp;<span class='" +
+								selectors.UNREAD_MESSAGES_COUNT_NUM + "'>0</span></div></a></td></tr>");
 						};
 					}
 					if (typeof this.detachUI !== "function") {
