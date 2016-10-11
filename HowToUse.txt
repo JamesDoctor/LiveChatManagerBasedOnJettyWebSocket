@@ -25,5 +25,5 @@ Suppose there is a raw customer web page like ".../WebPages/rawClientWebPage.htm
 
 -----------------------------------------------------
 
-All the webpages have been tested in IE-11, FireFox-45.4.0, Chrome-53.0.2785.143 m (64-bit)
+All the webpages have been tested in IE-11 (Click "Allow blocked content" if IE restricts the running of JS of the web page by default), FireFox-45.4.0, Chrome-53.0.2785.143 m (64-bit)
 
